@@ -1,23 +1,22 @@
 const db = require("./models")
-const {Vegetable} = db.models.vegetable
-db.sync({force: true})
-.then(() => {
-    console.log("Sync!");
-    db.models.Vegetable.bulkCreate([{
-        name: "carrots", color: "orange", plated_on: "2018-01-01"},
-        {
-        name: "kale", color: "green", plated_on: "2018-01-02"    
-        }   
-    ])
+const { vegetable } = db.models;
 
-    // db.close()
-})
+const vegetablesToAdd = [
+    {name: 'carrot', color: 'orange'},
+    {name: 'kale', color: 'green'},
+    {name: 'tomato', color: 'red'},
+]
 
-.catch(err => {
-    console.log(err);
-    //db.close()
- })
+db.sync({ force: true })
+    .then(() => {
+        return Promise.all(vegetablesToAdd.map((veg) => {
+            vegetable.create(veg);
+        }))
+    })
+    .then(() => {
+        db.close();
+    })
 
- .finally(()=>{
-     db.close();
- })
+    .catch (err => {
+        console.log(err);
+    })
